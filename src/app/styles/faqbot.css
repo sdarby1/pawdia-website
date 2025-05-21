@@ -1,0 +1,152 @@
+.faqbot-toggle-button {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 60px;
+  height: 60px;
+  font-size: 26px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.3s ease;
+}
+
+.faqbot-toggle-button:hover {
+  background: var(--accent-color);
+}
+
+.faqbot-modal {
+  position: fixed;
+  bottom: 110px;
+  right: 40px;
+  width: 400px;
+  max-height: 520px;
+  background: #fff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  border: 1px solid #ddd;
+}
+
+.faqbot-header {
+  background: var(--primary-color);
+  color: white;
+  padding: 14px 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-modal-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.faqbot-messages {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+  background: #f9f9f9;
+}
+
+.message {
+  max-width: 80%;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.message.assistant {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: var(--primary-color);
+}
+
+.faqbot-input-form {
+  display: flex;
+  padding: 12px;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+
+.faqbot-input-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  color: var(--primary-color);
+}
+
+.faqbot-input-form button {
+  margin-left: 8px;
+  padding: 10px 16px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.faqbot-input-form button:hover {
+  background: var(--accent-color);
+}
+
+.error-message {
+  padding: 8px 12px;
+  color: red;
+  font-size: 0.85rem;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+.faqbot-modal {
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@media (max-width: 768px) {
+  .faqbot-modal {
+    width: 90%;
+    right: 5%;
+    bottom: 100px;
+  }
+
+  .faqbot-toggle-button {
+    bottom: 22px;
+    right: 22px;
+  }
+}

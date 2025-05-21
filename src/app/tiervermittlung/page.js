@@ -1,0 +1,11 @@
+import React from 'react'
+
+const page = () => {
+  return (
+    <div className='bd-container'>
+        <h1>Tiervermittlung</h1>
+    </div>
+  )
+}
+
+export default page

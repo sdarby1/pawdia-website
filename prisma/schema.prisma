@@ -1,0 +1,124 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String?         @unique
+  image         String?
+  password      String?
+  favorites     Animal[]        @relation("UserFavorites")
+  accounts      Account[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String?  @db.Text
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  expires_at        Int?
+  user              User     @relation(fields: [userId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ShelterRequest {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  website     String?
+  message     String?
+  createdAt   DateTime @default(now())
+}
+
+model Shelter {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  password       String
+  address        String?
+  googleMapsLink String?
+  website        String?
+
+  instagram      String?
+  facebook       String?
+  tiktok         String?
+  linkedIn       String?
+
+  profileImage   String?
+  isVerified     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  animals        Animal[]
+}
+
+
+model Animal {
+  id                String   @id @default(cuid())
+  name              String
+  species           String   // z. B. Hund, Katze, Vogel, Kleintier
+  breed             String
+  gender            String
+  birthDate         DateTime
+  age               Int
+  size              String   // z. B. Klein, Mittel, Groß
+  isFamilyFriendly  Boolean
+  isForExperienced  Boolean
+  isEmergency       Boolean
+  description       String
+  coverImage        String
+  images            Json?
+  videos            Json?
+  shelter           Shelter  @relation(fields: [shelterId], references: [id])
+  shelterId         String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+ favoredBy         User[]   @relation("UserFavorites")
+}
+
+
+enum AnimalSize {
+  KLEIN
+  MITTEL
+  GROSS
+  EGAL
+}
+
+enum AnimalGender {
+  MAENNLICH
+  WEIBLICH
+  EGAL
+}
+
+enum AnimalType {
+  HUND
+  KATZE
+  KLEINTIER
+  VOGEL
+  EGAL
+}

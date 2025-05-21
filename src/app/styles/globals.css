@@ -1,0 +1,111 @@
+:root {
+    --background-color: #ffffff;
+    --primary-color: #654E4E;
+    --secondary-color: #CAB398;
+    --accent-color: #89A666;
+}
+
+* { 
+    -webkit-tap-highlight-color: transparent; 
+    box-sizing: border-box;
+}
+
+::-moz-selection {
+   color: white;
+  background: var(--accent-color);
+}
+
+::selection {
+ color: white;
+  background: var(--accent-color);
+}
+
+
+body {
+    background-color: var(--background-color);
+    font-family: Montserrat;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+
+
+
+
+
+h1 {
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--primary-color);
+    margin: 0px;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin: 0px;
+}
+
+p {
+    font-size: 16px;
+    font-weight: normal;
+    color: var(--primary-color);
+    margin: 0px;
+}
+
+a {
+    font-size: 16px;
+}
+
+.global-btn {
+    text-decoration: none;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 16px;
+    border-radius: 90px;
+    border-color: transparent;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.4s;
+    font-weight: 700;
+}
+
+.global-btn:hover {
+    background-color: #617548;
+}
+
+.form-ct {
+    margin: 7rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+
+
+
+
+@media (max-width: 1025px) {
+    h1 {
+        font-size: 4em;
+    }
+
+    h2 {
+        font-size: 3em;
+    }
+}
+
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+}

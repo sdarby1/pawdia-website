@@ -1,0 +1,102 @@
+.sign-in-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: fit-content;
+    gap: 22px;
+}
+
+.sign-in-form label {
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 250px;
+    width:fit-content;
+}
+
+.input-field input {
+    border-radius: 90px;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: white;
+}
+
+.error {
+    color: red;
+    margin: 0px;
+}
+
+.success {
+    color: green;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-submit-btn {
+    width: fit-content;
+    height: fit-content;
+}
+
+.provider-link-ct {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.provider-auth-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    border: 1px solid var(--primary-color);
+    border-radius: 90px;
+    background-color: white;
+    min-width: fit-content;
+    width: 250px;
+    padding: 10px 22px;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 700;
+} 
+.provider-auth-link p {
+    font-weight: 700;
+} 
+
+.provider-auth-link svg{
+    height: 40px;
+    width: 40px;
+}
+
+.google-icon-path-1 {
+    fill: #ea4335;
+  }
+
+  .google-icon-path-1, .google-icon-path-2, .google-icon-path-3, .google-icon-path-4 {
+    fill-rule: evenodd;
+  }
+
+  .google-icon-path-2{
+    fill: #34a853;
+  }
+
+  .google-icon-path-3 {
+    fill: #fbbc04;
+  }
+
+  .google-icon-path-4{
+    fill: #4285f4;
+  }
+
+  .github-icon-path-1 {
+    fill-rule: evenodd;
+  }

@@ -1,95 +1,46 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import FaqBot from '@/components/FaqBot';
+import Link from 'next/link'
+import React from 'react'
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+
+const page = () => {
+  return ( 
+    <>
+    <div className='video-wrapper'>
+      <div className='video-overlay'></div>
+      <video className='bg-video' src="/videos/home/home-background.mp4" autoPlay
+        loop
+        muted
+        playsInline></video>
+      <div className="bd-container">
+        <div className="home-start-container">
+          <h1 className='home-h1'>Finde dein neues Familienmitglied auf Pawdia</h1>
+          <h2 className='home-h2'>Tierheime aus ganz Deutschland - vernetzt auf einer Plattform</h2>
+          <div className="btn-container">
+            <Link className="global-btn" href="/">Jetzt Tiere entdecken</Link>
+            <Link className="global-btn" href="#benefits">Mehr erfahren</Link>
+          </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      <FaqBot /> 
     </div>
-  );
+    <div className='bd-container'>
+      <div className='benefits-ct' id="benefits">
+        <div className='benefit'>
+          <p>Deutschlandweit vernetzt</p>
+        </div>
+        <div className='benefit'>
+          <p>Direkte Kommunikation</p>
+        </div>
+        <div className='benefit'>
+          <p>Gezielte Suche</p>
+        </div>
+      </div>
+    </div>
+       </>
+  )
 }
+
+export default page
