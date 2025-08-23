@@ -57,7 +57,7 @@ const allCategories = Object.keys(categoryLabels)
       <div className='px-[1rem]'>
         <div className='video-wrapper !h-[60vh]'>
           <div className='video-overlay'></div>
-          <video className='bg-video' src="/videos/home/background-2.mp4" autoPlay loop muted playsInline></video>
+          <video className='bg-video' src="https://res.cloudinary.com/dozhrt8dh/video/upload/v1755973047/background-3_obaxge.webm" autoPlay loop muted playsInline></video>
           <div className="w-[1280px] bd-container">
             <div className="home-start-container">
               <h1 className='!text-white'>Möchtest du ein<br /> Haustier adoptieren?</h1>
