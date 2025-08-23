@@ -44,7 +44,7 @@ export const RegisterForm = () => {
       }
 
       // Automatisch einloggen
-      const loginRes = await signIn("credentials", {
+      const loginRes = await signIn("user-login", {
         redirect: false,
         email: data.email,
         password: data.password,
@@ -61,22 +61,33 @@ export const RegisterForm = () => {
   }
 
   return (
-    <div className="form-ct">
-      {serverError && <p className="error">{serverError}</p>}
-      {successMessage && <p className="success">{successMessage}</p>}
+    <div className="bd-container grid !grid-cols-[auto_1fr] gap-[8rem] pt-[2rem] pb-[5rem]">
+      <div className="flex flex-col gap-[3rem] items-center">
+        <h1 className='text-center'>Willkommen!</h1>
+        <div className="flex flex-col gap-[1rem] w-[100%]">
+          <p>Du bist ein:</p>
+          <div className="flex gap-[1rem]">
+            <Link href="/register" className="global-btn">Tierfreund</Link>
+              <Link href="/bewerben" className="global-btn">Tierheim</Link>
+          </div>
+        </div>
 
       <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
+              {serverError && <p className="error">{serverError}</p>}
+              {successMessage && <p className="success">{successMessage}</p>}
+
         <div className="input-container">
           {errors.name && <p className="form-error error">{errors.name.message}</p>}
           <div className="input-field">
-            <label htmlFor="name" className="input-label">Name *</label>
             <input
               type="text"
+              placeholder="Nutzername"
+                 autoComplete="off"
               id="name"
               {...register("name", {
-                required: { value: true, message: "Please enter your username" },
-                minLength: { value: 4, message: "Your username must be at least 4 characters long" },
-                maxLength: { value: 20, message: "Your username can't be more than 20 characters long" },
+                required: { value: true, message: "Nutzername ist erforderlich" },
+                minLength: { value: 4, message: "Mindestens 4 Zeichen" },
+                maxLength: { value: 20, message: "Dein Nutzername darf nicht länger als 30 Zeichen sein" },
               })}
             />
           </div>
@@ -85,15 +96,16 @@ export const RegisterForm = () => {
         <div className="input-container">
           {errors.email && <p className="form-error error">{errors.email.message}</p>}
           <div className="input-field">
-            <label htmlFor="email" className="input-label">E-mail *</label>
             <input
               type="email"
+              placeholder="E-Mail"
+              autoComplete="off"
               id="email"
               {...register("email", {
-                required: { value: true, message: "Please enter your email" },
+                required: { value: true, message: "E-Mail ist erforderlich" },
                 pattern: {
                   value: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
-                  message: "Please enter a valid email address",
+                  message: "Bitte gib eine gültige E-Mail an",
                 },
               })}
             />
@@ -103,13 +115,14 @@ export const RegisterForm = () => {
         <div className="input-container">
           {errors.password && <p className="form-error error">{errors.password.message}</p>}
           <div className="input-field">
-            <label htmlFor="password" className="input-label">Passwort *</label>
             <input
               type="password"
+              placeholder="Passwort"
+                 autoComplete="off"
               id="password"
               {...register("password", {
-                required: { value: true, message: "Please enter your password" },
-                minLength: { value: 8, message: "Your password must be at least 8 characters long" },
+                required: { value: true, message: "Passwort ist erforderlich" },
+                minLength: { value: 8, message: "YMindestens 8 Zeichen" },
               })}
             />
           </div>
@@ -120,33 +133,33 @@ export const RegisterForm = () => {
             <p className="form-error error">{errors.repeatPassword.message}</p>
           )}
           <div className="input-field">
-            <label htmlFor="repeatPassword" className="input-label">Passwort wiederholen *</label>
             <input
               type="password"
+              placeholder="Passwort bestätigen"
               id="repeatPassword"
               {...register("repeatPassword", {
-                required: { value: true, message: "Please confirm your password" },
+                required: { value: true, message: "Bitte bestätige dein Passwort" },
                 validate: (value) =>
-                  value === password || "Passwords do not match",
+                  value === password || "Die Passwörter stimmen nicht überein",
               })}
             />
           </div>
         </div>
 
-        <button type="submit" className="global-btn form-submit-btn" disabled={isSubmitting}>
+        <button type="submit" className="global-btn-bg !w-[100%] form-submit-btn" disabled={isSubmitting}>
           Senden
         </button>
       </form>
 
-      <div className="provider-link-ct">
-        <p>Oder</p>
-        <ProviderContainer />
-      </div>
+       <div className='flex gap-[1rem]'>
+          <Link href="" onClick={() => signIn('google')}><img src="/images/signIn/google-icon.svg" /></Link>
+          <Link href="" onClick={() => signIn('github')}><img src="/images/signIn/github-icon.svg" /></Link>
+        </div>
 
-      <p>
-        Du hast bereits einen Account? Super, einfach{" "}
-        <Link href="/login">hier anmelden</Link>
-      </p>
+    </div>
+      <div className='w-[100%] h-[100%] flex items-align justify-center'>
+        <img className='w-[65%]' src="/images/signIn/allAnimals.svg"></img>
+      </div>
     </div>
   );
 };

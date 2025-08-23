@@ -1,0 +1,77 @@
+ .image-box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    overflow: hidden;
+  }
+
+  .animal-list-ct ul {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr;
+   grid-auto-rows: 1fr;
+   gap: 1rem;
+  }
+
+  @media  (max-width: 768px) {
+    
+  .animal-list-ct ul {
+   grid-template-columns: 1fr;
+  }
+  .animal-list-ct-profile ul {
+   grid-template-columns: 1fr !important;
+  }
+
+    .animal-profile-infos {
+    grid-template-columns: 1fr !important;
+
+  }
+  }
+
+  .animal-list-ct-profile ul {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr 1fr;
+   grid-auto-rows: 1fr;
+   gap: 1rem;
+  }
+
+
+
+  .animal-profile-img {
+    max-width: 500px;
+    border-radius: 1rem;
+  } 
+
+
+
+
+  /* test styling des tzierprofils */
+
+  .animal-profile-infos {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 3rem;
+  }
+
+  .animal-info-ct {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 2rem;
+    row-gap: 1rem;
+  }
+  
+  .animal-i {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  
+  
+

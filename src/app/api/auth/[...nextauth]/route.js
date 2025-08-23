@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
-import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma";
@@ -10,7 +9,7 @@ import bcrypt from "bcryptjs";
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt", 
+    strategy: "jwt",
   },
   providers: [
     GoogleProvider({
@@ -21,35 +20,55 @@ export const authOptions = {
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
-   /* FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET
-    }), */
     CredentialsProvider({
-      name: "Credentials",
+      id: "user-login",
+      name: "User Login",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing email or password");
-        }
+        const { email, password } = credentials;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.password) {
-          throw new Error("User not found or no password set");
+          throw new Error("Benutzer nicht gefunden oder kein Passwort gesetzt.");
         }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
-          throw new Error("Invalid password");
+          throw new Error("Falsches Passwort.");
         }
 
         return user;
+      },
+    }),
+    CredentialsProvider({
+      id: "shelter-login",
+      name: "Tierheim Login",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const { email, password } = credentials;
+
+        const shelter = await prisma.shelter.findUnique({ where: { email } });
+        if (!shelter || !shelter.password) {
+          throw new Error("Tierheim nicht gefunden oder kein Passwort gesetzt.");
+        }
+
+        const isValid = await bcrypt.compare(password, shelter.password);
+        if (!isValid) {
+          throw new Error("Falsches Passwort.");
+        }
+
+        return {
+          id: shelter.id,
+          email: shelter.email,
+          name: shelter.name,
+          role: "SHELTER",
+        };
       },
     }),
   ],
@@ -59,14 +78,24 @@ export const authOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
+        token.role = user.role;
       }
+
+      if (!token.id && token.email) {
+        const dbUser = await prisma.user.findUnique({ where: { email: token.email } });
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
-      // Übertragen von JWT-Daten auf die Session
       session.user.id = token.id;
       session.user.email = token.email;
       session.user.name = token.name;
+      session.user.role = token.role;
       return session;
     },
   },

@@ -1,0 +1,290 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/* ========== USER & AUTH ========== */
+
+model User {
+  id         String       @id @default(cuid())
+  name       String?
+  email      String?      @unique
+  image      String?
+  password   String?
+  role       Role         @default(USER)
+
+  // Favorites: explizite Join-Tabelle
+  favorites  UserFavorite[]
+
+  accounts   Account[]
+  chats      Chat[]
+  blogPosts  BlogPost[]
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String?  @db.Text
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  expires_at        Int?
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+/* ========== SHELTER & OPENING HOURS ========== */
+
+model Shelter {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  password       String
+
+  contactPerson  String?
+  street         String?
+  houseNumber    String?
+  postalCode     String?
+  city           String?
+  phoneNumber    String?
+
+  latitude       Float?
+  longitude      Float?
+  googleMapsLink String? @db.Text
+  website        String?
+
+  instagram      String?
+  facebook       String?
+  tiktok         String?
+  linkedIn       String?
+
+  profileImage   String?
+  isVerified     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  animals        Animal[]
+  chats          Chat[]
+  openingHours   OpeningHour[]
+}
+
+model OpeningHour {
+  id        String   @id @default(cuid())
+  day       String
+  fromTime  String
+  toTime    String
+
+  shelter   Shelter  @relation(fields: [shelterId], references: [id], onDelete: Cascade)
+  shelterId String
+}
+
+/* ========== ANIMALS & FAVORITES (explizit) ========== */
+
+model Animal {
+  id                String    @id @default(cuid())
+  name              String
+  species           String
+  breed             String
+  gender            String
+  birthDate         DateTime
+  age               Int
+  size              String
+  isFamilyFriendly  Boolean
+  isForExperienced  Boolean
+  isEmergency       Boolean
+  isNeutered        Boolean   @default(false)
+  isForSeniors      Boolean   @default(false)
+  isForBeginners    Boolean   @default(false)
+  goodWithCats      Boolean   @default(false)
+  goodWithDogs      Boolean   @default(false)
+  goodWithChildren  Boolean   @default(false)
+  adoptionFee       Float?
+  description       String    @db.Text
+  coverImage        String
+  images            Json?
+  videos            Json?
+
+  shelter           Shelter   @relation(fields: [shelterId], references: [id], onDelete: Cascade)
+  shelterId         String
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Favorites (explizit)
+  favoredBy         UserFavorite[]
+
+  // Chats, optionaler Bezug auf Animal → beim Löschen AnimalId auf NULL setzen:
+  chats             Chat[]
+}
+
+model UserFavorite {
+  userId   String
+  animalId String
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  animal   Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@id([userId, animalId])
+  @@index([animalId])
+}
+
+/* ========== CHATS & MESSAGES ========== */
+
+model Chat {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  shelter   Shelter    @relation(fields: [shelterId], references: [id], onDelete: Cascade)
+  shelterId String
+  animal    Animal?    @relation(fields: [animalId], references: [id], onDelete: SetNull)
+  animalId  String?
+  status    ChatStatus @default(OFFEN)
+  messages  Message[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([shelterId])
+  @@index([animalId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  senderId  String
+  isFromUser Boolean
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId    String
+
+  @@index([chatId])
+}
+
+/* ========== BLOG ========== */
+
+model BlogPost {
+  id          String       @id @default(cuid())
+  title       String
+  coverImage  String?
+  subheadline String?
+  categories  BlogPostCategory[]
+  blocks      BlogBlock[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  authorId    String?
+  author      User?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
+}
+
+model BlogPostCategory {
+  id       String     @id @default(cuid())
+  category BlogCategory
+
+  post     BlogPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   String
+
+  @@index([postId])
+}
+
+model BlogBlock {
+  id         String   @id @default(cuid())
+  type       BlockType
+  content    String   @db.Text
+  order      Int
+
+  blogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  blogPostId String
+
+  @@index([blogPostId])
+}
+
+/* ========== SHELTER REQUESTS (unabhängig) ========== */
+
+model ShelterRequest {
+  id            String   @id @default(cuid())
+  name          String
+  email         String
+  website       String?
+  contactPerson String?
+  street        String?
+  houseNumber   String?
+  postalCode    String?
+  city          String?
+  message       String?
+  documents     Json?
+  createdAt     DateTime @default(now())
+}
+
+/* ========== ENUMS ========== */
+
+enum ChatStatus {
+  OFFEN
+  ERLEDIGT
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AnimalSize {
+  KLEIN
+  MITTEL
+  GROSS
+  EGAL
+}
+
+enum AnimalGender {
+  MAENNLICH
+  WEIBLICH
+  EGAL
+}
+
+enum AnimalType {
+  HUND
+  KATZE
+  KLEINTIER
+  VOGEL
+  EGAL
+}
+
+enum BlockType {
+  HEADING
+  PARAGRAPH
+  IMAGE
+}
+
+enum BlogCategory {
+  TIERSCHUTZ
+  ERNAEHRUNG
+  ADOPTION
+  HUNDE
+  KATZEN
+  VERMISST
+  AKTUELLES
+}

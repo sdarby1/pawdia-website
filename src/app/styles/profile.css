@@ -1,0 +1,37 @@
+
+.user-infos-ct ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user-fav-ct ul {
+        display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 100%; /* Wichtig */
+}
+
+.user-fav-ct li {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+
+
+/* Admin Dashboard */
+
+.shelter-table {
+  width: 100%;
+  transform: translateY(-1rem);
+}
+
+.shelter-table th,
+.shelter-table td {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 400;
+}
+
+

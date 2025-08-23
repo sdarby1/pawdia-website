@@ -1,11 +1,13 @@
-import React from 'react'
+import { Suspense } from "react";
+import TierListe from "./Tierliste";
 
-const page = () => {
+export const dynamic = "force-dynamic"; // optional, falls SSG Druck macht
+// export const revalidate = 0;         // alternative Option
+
+export default function TiervermittlungPage() {
   return (
-    <div className='bd-container'>
-        <h1>Tiervermittlung</h1>
-    </div>
-  )
+    <Suspense fallback={<div style={{ padding: 16 }}>Lade Filter & Tiere…</div>}>
+      <TierListe />
+    </Suspense>
+  );
 }
-
-export default page

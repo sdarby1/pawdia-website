@@ -1,22 +1,32 @@
 body {
     margin: 0px;
-    padding: 0px 22px;
     overflow-x: hidden;
 }
 
 /* Full Width Container */
 .fw-container {
-    margin-top: 7rem;
     width: 100%;
     position: relative;
 }
 
 /* Boxed Container */
 .bd-container {
-    max-width: 1140px;
-    margin: 7rem auto 0 auto;
+    max-width: 1280px;
+    margin: 0 auto 0 auto;
 }
 
+.o-1-ct {
+    padding-top: 1rem;
+}
+
+.o-u-1-ct {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.u-1-ct {
+    padding-bottom: 1rem;
+}
 
 
 
@@ -30,5 +40,7 @@ body {
 @media (max-width: 768px) {
     .bd-container {
         max-width: 100%;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }

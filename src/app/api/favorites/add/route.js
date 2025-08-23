@@ -1,38 +1,53 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import jwt from 'jsonwebtoken';
+import { getToken } from 'next-auth/jwt'
+import prisma from '@/lib/prisma'
+import { NextResponse } from 'next/server'
 
 export async function POST(req) {
   try {
-    const authHeader = req.headers.get('authorization');
-    const token = authHeader?.split(' ')[1];
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
-    if (!token) {
-      return NextResponse.json({ error: 'Nicht autorisiert.' }, { status: 401 });
+    if (!token || !token.id) {
+      return NextResponse.json(
+        { error: 'Du musst angemeldet sein, um Tiere zu favorisieren.' },
+        { status: 401 }
+      )
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.id;
+    const { animalId } = await req.json()
 
-    const { animalId } = await req.json();
-
-    if (!animalId) {
-      return NextResponse.json({ error: 'Tier-ID fehlt.' }, { status: 400 });
-    }
-
-    
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        favorites: {
-          connect: { id: animalId },
+    // prüfen, ob Favorit bereits existiert
+    const existing = await prisma.userFavorite.findUnique({
+      where: {
+        userId_animalId: {
+          userId: token.id,
+          animalId,
         },
       },
-    });
+    })
 
-    return NextResponse.json({ message: 'Tier wurde zu deinen Favoriten hinzugefügt.' });
-  } catch (error) {
-    console.error('[FAVORITE_ADD_ERROR]', error);
-    return NextResponse.json({ error: 'Fehler beim Hinzufügen zu Favoriten.' }, { status: 500 });
+    if (existing) {
+      // Favorit entfernen
+      await prisma.userFavorite.delete({
+        where: {
+          userId_animalId: {
+            userId: token.id,
+            animalId,
+          },
+        },
+      })
+      return NextResponse.json({ message: 'Favorit entfernt.', favorited: false })
+    } else {
+      // Favorit hinzufügen
+      await prisma.userFavorite.create({
+        data: {
+          userId: token.id,
+          animalId,
+        },
+      })
+      return NextResponse.json({ message: 'Favorit hinzugefügt.', favorited: true })
+    }
+  } catch (err) {
+    console.error('[FAVORITE_TOGGLE_ERROR]', err)
+    return NextResponse.json({ error: 'Fehler beim Favoriten-Toggle.' }, { status: 500 })
   }
 }

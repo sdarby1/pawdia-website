@@ -3,9 +3,20 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+    const { data: session, status } = useSession();
+
+   const userRole = session?.user?.role;
+  const isLoggedIn = status === "authenticated";
+
+  const getDashboardLink = () => {
+    if (userRole === 'ADMIN') return '/admin/dashboard';
+    if (userRole === 'SHELTER') return '/shelter/dashboard';
+    return '/profile';
+  }  
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -27,10 +38,22 @@ const MobileMenu = () => {
 
         <nav>
           <Link href="/" onClick={toggleMenu}>Startseite</Link>
-          <Link href="/tiere" onClick={toggleMenu}>Tiere entdecken</Link>
-          <Link href="/tierschutz" onClick={toggleMenu}>Tierschutz</Link>
-          <Link href="/login" onClick={toggleMenu}>Login</Link>
-          <Link href="/register" onClick={toggleMenu}>Registrieren</Link>
+          <Link href="/tiervermittlung" onClick={toggleMenu}>Tiervermittlung</Link>
+          <Link href="/blog" onClick={toggleMenu}>Blog</Link>
+          <Link href="/ueber-uns" onClick={toggleMenu}>Über uns</Link>
+           {isLoggedIn ? (
+              <Link
+                href={getDashboardLink()}
+                className='global-btn-bg text-center'
+              >
+                {session.user.name || 'Benutzer'}
+              </Link>
+            ) : (
+              <div className="flex gap-[0.5rem] flex-col pb-1">
+                <Link href="/login" className='global-btn-bg text-center'>Anmelden</Link>
+                <Link href="/shelter/login" className='global-btn text-center'>Als Tierheim anmelden</Link>
+              </div>
+            )}
         </nav>
       </div>
     </>

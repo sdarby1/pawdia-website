@@ -1,8 +1,12 @@
+@import 'tailwindcss';
+
 :root {
     --background-color: #ffffff;
-    --primary-color: #654E4E;
-    --secondary-color: #CAB398;
-    --accent-color: #89A666;
+    --primary-color: #4CA32D;
+    --secondary-color: #F4EFE9;
+    --accent-color: #E4ECE1;
+    --text-color: #000000;
+      font-size: 20px;
 }
 
 * { 
@@ -12,12 +16,12 @@
 
 ::-moz-selection {
    color: white;
-  background: var(--accent-color);
+  background: var(--primary-color);
 }
 
 ::selection {
  color: white;
-  background: var(--accent-color);
+  background: var(--primary-color);
 }
 
 
@@ -26,54 +30,96 @@ body {
     font-family: Montserrat;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    font-size: 20px;
 }
-
-
 
 
 
 
 h1 {
-    font-size: 5rem;
-    font-weight: 900;
-    color: var(--primary-color);
+    font-size: 3.2rem;
+    line-height: 72px;
+    font-weight: 700;
+    color: var(--text-color);
     margin: 0px;
-    text-transform: uppercase;
+     font-family: Montserrat;
+     width: fit-content;
 }
 
 h2 {
-    font-size: 2rem;
-    font-weight: 500;
-    color: var(--secondary-color);
+    font-size: 2.4rem;
+    line-height: 60px;
+    color: var(--text-color);
     margin: 0px;
+     font-family: Montserrat;
+}
+
+h3 {
+    font-size: 1.6rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+    font-weight: 400;
 }
 
 p {
-    font-size: 16px;
+    font-size: 0.9rem;
     font-weight: normal;
-    color: var(--primary-color);
+    color: var(--text-color);
     margin: 0px;
+    line-height: normal;
 }
 
 a {
     font-size: 16px;
 }
 
-.global-btn {
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+::marker {
+    content: "";
+}
+
+.global-btn-bg {
+    display: block;
     text-decoration: none;
-    background-color: var(--accent-color);
+    background-color: var(--primary-color);
     color: white;
     font-size: 16px;
     border-radius: 90px;
     border-color: transparent;
-    padding: 10px 16px;
+    padding: 8px 16px;
     cursor: pointer;
     transition: all 0.4s;
-    font-weight: 700;
+    font-weight: 400;
+    width: fit-content;
+     font-size: 0.7rem;
+    line-height: 20px;
+}
+
+.global-btn {
+    display: block;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-size: 16px;
+    border-radius: 90px;
+    border: 2px solid var(--primary-color);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.4s;
+    font-weight: 400;
+    width: fit-content;
+    font-size: 0.7rem;
+    line-height: 20px;
 }
 
 .global-btn:hover {
-    background-color: #617548;
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .form-ct {
@@ -83,29 +129,70 @@ a {
     gap: 22px;
 }
 
+.global-ct {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.global-ct-a {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
 
 
+.bg-r {
+    background-color: red;
+}
+
+.bg-r:hover {
+    background-color: rgb(177, 0, 0);
+}
+
+.c-r {
+    color: white;
+}
 
 
 
 @media (max-width: 1025px) {
     h1 {
-        font-size: 4em;
+        font-size: 2em;
     }
 
     h2 {
-        font-size: 3em;
+        font-size: 1.8em;
     }
 }
 
 
 @media (max-width: 768px) {
     h1 {
-        font-size: 2em;
+        font-size: 1.8em;
+        line-height: normal;
     }
 
     h2 {
-        font-size: 1.5em;
+        font-size: 1.4em;
+        line-height: normal;
     }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+
+     h4 {
+        font-size: 1.1rem;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .global-btn, .global-btn-bg {
+        font-size: 14px;
+}
 
 }

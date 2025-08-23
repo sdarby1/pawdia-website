@@ -1,5 +1,5 @@
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
@@ -7,31 +7,39 @@ generator client {
   provider = "prisma-client-js"
 }
 
+/* ========== USER & AUTH ========== */
+
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  email         String?         @unique
-  image         String?
-  password      String?
-  favorites     Animal[]        @relation("UserFavorites")
-  accounts      Account[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id         String       @id @default(auto()) @map("_id") @db.ObjectId
+  name       String?
+  email      String?      @unique
+  image      String?
+  password   String?
+  role       Role         @default(USER)
+
+  favorites  UserFavorite[]
+  accounts   Account[]
+  chats      Chat[]
+  blogPosts  BlogPost[]
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
 model Account {
-  id                String   @id @default(cuid())
-  userId            String
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
   type              String
   provider          String
   providerAccountId String
-  access_token      String?  @db.Text
+  access_token      String?
   token_type        String?
   scope             String?
-  id_token          String?  @db.Text
+  id_token          String?
   expires_at        Int?
+
   user              User     @relation(fields: [userId], references: [id])
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -40,6 +48,7 @@ model Account {
 }
 
 model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   identifier String
   token      String
   expires    DateTime
@@ -47,21 +56,23 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model ShelterRequest {
-  id          String   @id @default(cuid())
-  name        String
-  email       String   @unique
-  website     String?
-  message     String?
-  createdAt   DateTime @default(now())
-}
+/* ========== SHELTER & OPENING HOURS ========== */
 
 model Shelter {
-  id             String   @id @default(cuid())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   email          String   @unique
   password       String
-  address        String?
+
+  contactPerson  String?
+  street         String?
+  houseNumber    String?
+  postalCode     String?
+  city           String?
+  phoneNumber    String?
+
+  latitude       Float?
+  longitude      Float?
   googleMapsLink String?
   website        String?
 
@@ -75,32 +86,171 @@ model Shelter {
   createdAt      DateTime @default(now())
 
   animals        Animal[]
+  chats          Chat[]
+  openingHours   OpeningHour[]
 }
 
+model OpeningHour {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  day       String
+  fromTime  String
+  toTime    String
+
+  shelter   Shelter  @relation(fields: [shelterId], references: [id])
+  shelterId String   @db.ObjectId
+}
+
+/* ========== ANIMALS & FAVORITES (explizit) ========== */
 
 model Animal {
-  id                String   @id @default(cuid())
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
   name              String
-  species           String   // z. B. Hund, Katze, Vogel, Kleintier
+  species           String
   breed             String
   gender            String
   birthDate         DateTime
   age               Int
-  size              String   // z. B. Klein, Mittel, Groß
+  size              String
   isFamilyFriendly  Boolean
   isForExperienced  Boolean
   isEmergency       Boolean
+  isNeutered        Boolean   @default(false)
+  isForSeniors      Boolean   @default(false)
+  isForBeginners    Boolean   @default(false)
+  goodWithCats      Boolean   @default(false)
+  goodWithDogs      Boolean   @default(false)
+  goodWithChildren  Boolean   @default(false)
+  adoptionFee       Float?
   description       String
   coverImage        String
   images            Json?
   videos            Json?
-  shelter           Shelter  @relation(fields: [shelterId], references: [id])
-  shelterId         String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
- favoredBy         User[]   @relation("UserFavorites")
+
+  shelter           Shelter   @relation(fields: [shelterId], references: [id])
+  shelterId         String    @db.ObjectId
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  favoredBy         UserFavorite[]
+  chats             Chat[]
 }
 
+model UserFavorite {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String @db.ObjectId
+  animalId String @db.ObjectId
+
+  user     User   @relation(fields: [userId], references: [id])
+  animal   Animal @relation(fields: [animalId], references: [id])
+
+  @@unique([userId, animalId])
+  @@index([animalId])
+  @@index([userId])
+}
+
+/* ========== CHATS & MESSAGES ========== */
+
+model Chat {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String     @db.ObjectId
+  shelterId String     @db.ObjectId
+  animalId  String?    @db.ObjectId
+  status    ChatStatus @default(OFFEN)
+  messages  Message[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id])
+  shelter   Shelter    @relation(fields: [shelterId], references: [id])
+  animal    Animal?    @relation(fields: [animalId], references: [id])
+
+  @@index([userId])
+  @@index([shelterId])
+  @@index([animalId])
+}
+
+model Message {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  content    String
+  senderId   String
+  isFromUser Boolean
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  chatId     String   @db.ObjectId
+  chat       Chat     @relation(fields: [chatId], references: [id])
+
+  @@index([chatId])
+}
+
+/* ========== BLOG ========== */
+
+model BlogPost {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  coverImage  String?
+  subheadline String?
+  categories  BlogPostCategory[]
+  blocks      BlogBlock[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  authorId    String?      @db.ObjectId
+  author      User?        @relation(fields: [authorId], references: [id])
+}
+
+model BlogPostCategory {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  category BlogCategory
+
+  postId   String     @db.ObjectId
+  post     BlogPost   @relation(fields: [postId], references: [id])
+
+  @@index([postId])
+}
+
+model BlogBlock {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  type       BlockType
+  content    String
+  order      Int
+
+  blogPostId String   @db.ObjectId
+  blogPost   BlogPost @relation(fields: [blogPostId], references: [id])
+
+  @@index([blogPostId])
+}
+
+/* ========== SHELTER REQUESTS (unabhängig) ========== */
+
+model ShelterRequest {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String
+  website       String?
+  contactPerson String?
+  street        String?
+  houseNumber   String?
+  postalCode    String?
+  city          String?
+  message       String?
+  documents     Json?
+  createdAt     DateTime @default(now())
+}
+
+/* ========== ENUMS ========== */
+
+enum ChatStatus {
+  OFFEN
+  ERLEDIGT
+}
+
+enum Role {
+  USER
+  ADMIN
+}
 
 enum AnimalSize {
   KLEIN
@@ -121,4 +271,20 @@ enum AnimalType {
   KLEINTIER
   VOGEL
   EGAL
+}
+
+enum BlockType {
+  HEADING
+  PARAGRAPH
+  IMAGE
+}
+
+enum BlogCategory {
+  TIERSCHUTZ
+  ERNAEHRUNG
+  ADOPTION
+  HUNDE
+  KATZEN
+  VERMISST
+  AKTUELLES
 }

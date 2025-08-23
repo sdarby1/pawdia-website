@@ -1,0 +1,15 @@
+.footer-search-ct {
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: white;
+    z-index: 9999;
+    border-radius: 90px;
+}
+
+.footer-search-ct input, .footer-search-ct select {
+    background-color: var(--accent-color);
+    border-radius: 90px;
+    padding: 8px 16px;
+    font-size: 0.7rem;
+    max-width: 300px
+}

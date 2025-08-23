@@ -4,24 +4,24 @@
 }
 
 .header {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
-    padding: 40px 0px;
+    padding: 2rem 0rem 2rem 0rem;
 }
 
 .header-menu ul {
     list-style: none;
     display: flex;
     flex-direction: row;
-    gap: 22px;
+    gap: 1.5rem;
 }
 
 .header-menu a {
     text-decoration: none;
-    color: var(--primary-color);
-    font-size: 20px;
+    color: var(--text-color);
     position: relative;
     padding: 0px 0px 4px 0px
 }
@@ -29,7 +29,7 @@
 .header-menu a::before {
     content: '';
     background-color: var(--primary-color);
-    height: 4px;
+    height: 2px;
     width: 0%;
     position: absolute;
     left: 0;
@@ -46,7 +46,7 @@
 .header-menu a::after {
     content: '';
     background-color: var(--primary-color);
-    height: 4px;
+    height: 2px;
     width: 0%;
     position: absolute;
     right: 0;
@@ -102,7 +102,7 @@
     }
 
     .site-logo {
-        height: 50px;
+        height: 45px;
     }
 
     .sign-in-btn {
@@ -177,9 +177,6 @@
     }
   
     .mobile-menu nav a {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--primary-color);
       text-decoration: none;
       padding: 0.5rem 0;
       border-bottom: 1px solid #eee;
@@ -189,5 +186,28 @@
     .mobile-menu nav a:hover {
       color: var(--accent-color);
     }
+
+    .provider-auth-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    border: 1px solid var(--primary-color);
+    border-radius: 90px;
+    background-color: white;
+    min-width: fit-content;
+    width: fit-content;
+    padding: 10px 22px;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 700;
+} 
+
+.sign-in-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: fit-content;
+    gap: 1rem;
+}
   }
   
