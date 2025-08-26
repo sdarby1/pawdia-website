@@ -153,10 +153,10 @@ export default function AnimalCreatePage() {
                 required
               >
                 <option value="">Bitte wählen…</option>
-                <option value="HUND">Hund</option>
-                <option value="KATZE">Katze</option>
-                <option value="VOGEL">Vogel</option>
-                <option value="KLEINTIER">Kleintier</option>
+                <option value="Hund">Hund</option>
+                <option value="Katze">Katze</option>
+                <option value="Vogel">Vogel</option>
+                <option value="Kleintier">Kleintier</option>
               </select>
             </div>
 
