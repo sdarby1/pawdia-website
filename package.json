@@ -22,6 +22,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "ai": "^4.3.4",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
     "formidable": "^3.5.4",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.488.0",

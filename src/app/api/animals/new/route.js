@@ -1,8 +1,7 @@
-import { writeFile } from 'fs/promises'
-import path from 'path'
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import cloudinary from '@/lib/cloudinary'
 
 export async function POST(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
@@ -24,7 +23,7 @@ export async function POST(req) {
     const size = formData.get('size')
     const description = formData.get('description')
 
-    // Checkboxen (Boolean-Felder)
+    // Checkboxen
     const getBool = key => formData.get(key) === 'true'
     const isFamilyFriendly = getBool('isFamilyFriendly')
     const isForExperienced = getBool('isForExperienced')
@@ -36,56 +35,57 @@ export async function POST(req) {
     const goodWithChildren = getBool('goodWithChildren')
     const isNeutered = getBool('isNeutered')
 
-    // Dateien (Coverbild, Bilder, Videos)
+    // Dateien
     const coverFile = formData.get('coverImage')
     const imageFiles = formData.getAll('images')
     const videoFiles = formData.getAll('videos')
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'animals')
-    const timeStamp = Date.now()
+    const uploadToCloudinary = async (file, folder) => {
+      const arrayBuffer = await file.arrayBuffer()
+      const buffer = Buffer.from(arrayBuffer)
 
-    // Funktion zum Speichern einer Datei und Rückgabe des relativen Pfads
-    const saveFile = async (file, prefix = '') => {
-      const buffer = Buffer.from(await file.arrayBuffer())
-      const ext = file.name.split('.').pop()
-      const fileName = `${prefix}-${timeStamp}-${Math.random().toString(36).substring(2)}.${ext}`
-      const filePath = path.join(uploadDir, fileName)
-      await writeFile(filePath, buffer)
-      return `/uploads/animals/${fileName}`
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder,
+            resource_type: 'auto', // erkennt automatisch ob Bild oder Video
+          },
+          (err, result) => {
+            if (err) return reject(err)
+            resolve(result.secure_url)
+          }
+        )
+        stream.end(buffer)
+      })
     }
 
-    const coverImage = coverFile && coverFile.name ? await saveFile(coverFile, 'cover') : null
+    const coverImage = coverFile && coverFile.name
+      ? await uploadToCloudinary(coverFile, 'pawdia/animals')
+      : null
 
     const images = []
     for (const img of imageFiles) {
       if (img.name) {
-        const imgPath = await saveFile(img, 'img')
-        images.push(imgPath)
+        const url = await uploadToCloudinary(img, 'pawdia/animals')
+        images.push(url)
       }
     }
 
     const videos = []
     for (const vid of videoFiles) {
       if (vid.name) {
-        const vidPath = await saveFile(vid, 'vid')
-        videos.push(vidPath)
+        const url = await uploadToCloudinary(vid, 'pawdia/animals')
+        videos.push(url)
       }
     }
 
     if (
-  !name?.trim() ||
-  !species?.trim() ||
-  !breed?.trim() ||
-  !gender?.trim() ||
-  !birthDate ||
-  isNaN(age) ||
-  !size?.trim() ||
-  !description?.trim() ||
-  !coverFile || !coverFile.name
-) {
-  return NextResponse.json({ error: 'Pflichtfelder fehlen.' }, { status: 400 })
-}
-
+      !name?.trim() || !species?.trim() || !breed?.trim() ||
+      !gender?.trim() || !birthDate || isNaN(age) ||
+      !size?.trim() || !description?.trim() || !coverImage
+    ) {
+      return NextResponse.json({ error: 'Pflichtfelder fehlen.' }, { status: 400 })
+    }
 
     const newAnimal = await prisma.animal.create({
       data: {

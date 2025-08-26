@@ -107,7 +107,7 @@ useEffect(() => {
                 `}
               >
                  <p className={isOwn ? '!text-black !text-left' : 'text-black'}>{msg.content}</p>
-                <small className='text-gray-400 hidden'>
+                <small className='text-gray-400'>
                   {new Date(msg.createdAt).toLocaleString('de-DE')}
                 </small>
               </div>

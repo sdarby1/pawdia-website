@@ -1,20 +1,39 @@
-import { writeFile } from 'fs/promises'
-import path from 'path'
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { v2 as cloudinary } from 'cloudinary'
+import path from 'path'
 
-const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'animals')
+// Cloudinary Konfiguration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
-const saveFile = async (file, prefix = '') => {
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const ext = file.name.split('.').pop()
-  const fileName = `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`
-  const filePath = path.join(uploadDir, fileName)
-  await writeFile(filePath, buffer)
-  return `/uploads/animals/${fileName}`
+// Upload-Funktion für Cloudinary
+const uploadToCloudinary = async (file, folder, prefix = '') => {
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+
+  const uploadResult = await new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      {
+        folder: `pawdia/${folder}`,
+        public_id: `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2)}`,
+        resource_type: 'auto',
+      },
+      (error, result) => {
+        if (error) reject(error)
+        else resolve(result)
+      }
+    ).end(buffer)
+  })
+
+  return uploadResult.secure_url
 }
 
+// GET – Tier abrufen
 export async function GET(req, context) {
   const { params } = context
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
@@ -42,6 +61,7 @@ export async function GET(req, context) {
   }
 }
 
+// PATCH – Tier aktualisieren
 export async function PATCH(req, context) {
   const { params } = context
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
@@ -79,12 +99,18 @@ export async function PATCH(req, context) {
 
     const images = []
     for (const img of imageFiles) {
-      if (img.name) images.push(await saveFile(img, 'img'))
+      if (img.name) {
+        const url = await uploadToCloudinary(img, 'animals/images', 'img')
+        images.push(url)
+      }
     }
 
     const videos = []
     for (const vid of videoFiles) {
-      if (vid.name) videos.push(await saveFile(vid, 'vid'))
+      if (vid.name) {
+        const url = await uploadToCloudinary(vid, 'animals/videos', 'vid')
+        videos.push(url)
+      }
     }
 
     if (!name?.trim() || !species?.trim() || !breed?.trim() || !description?.trim()) {
@@ -128,6 +154,7 @@ export async function PATCH(req, context) {
   }
 }
 
+// DELETE – Tier löschen
 export async function DELETE(req, context) {
   const { params } = context
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })

@@ -21,5 +21,4 @@ prisma/dev.db-journal
 # Deine Assets (NICHT ins Repo!)
 uploads/
 public/uploads/
-public/videos/
-videos/
+

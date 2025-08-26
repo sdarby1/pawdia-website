@@ -27,7 +27,12 @@ export default function CreateBlogPostPage() {
   }
 
   const addBlock = type => {
-    setBlocks(prev => [...prev, { type, content: '' }])
+    if (type === 'IMAGE') {
+      const localFileName = `block-img-${blocks.length}`
+      setBlocks(prev => [...prev, { type, content: '', localFileName }])
+    } else {
+      setBlocks(prev => [...prev, { type, content: '' }])
+    }
   }
 
   const updateBlock = (index, content) => {
@@ -58,6 +63,17 @@ export default function CreateBlogPostPage() {
     formData.append('subheadline', data.subheadline || '')
     formData.append('coverImage', data.coverImage[0])
     formData.append('categories', JSON.stringify(categories))
+
+    // Bilder aus Inhaltsblöcken sammeln
+    blocks.forEach((block, index) => {
+      if (block.type === 'IMAGE' && block.localFileName) {
+        const input = document.querySelector(`input[name="${block.localFileName}"]`)
+        if (input?.files?.[0]) {
+          formData.append(block.localFileName, input.files[0])
+        }
+      }
+    })
+
     formData.append('blocks', JSON.stringify(blocks))
 
     const res = await fetch('/api/blog/new', {
@@ -141,21 +157,30 @@ export default function CreateBlogPostPage() {
           </div>
         </div>
 
-        {/* Inhalt */}
+        {/* Inhaltsblöcke */}
         <div className="flex flex-col gap-[0.5rem]">
           <label>Inhalt *</label>
           <div className="flex flex-col gap-[1rem]">
             {blocks.map((block, index) => (
               <div key={index} className="shadow p-[1rem] rounded-[1rem] relative bg-white">
                 <div className="text-sm text-gray-500 mb-1">{block.type}</div>
+
                 {block.type === 'IMAGE' ? (
-                  <input
-                    className="w-full border"
-                    type="text"
-                    placeholder="Pfad zum Bild (z. B. /uploads/blog/hund.jpg)"
-                    value={block.content}
-                    onChange={e => updateBlock(index, e.target.value)}
-                  />
+                  <>
+                    <input
+                      className="w-full border"
+                      type="file"
+                      accept="image/*"
+                      name={block.localFileName}
+                      onChange={e => {
+                        const file = e.target.files?.[0]
+                        updateBlock(index, file?.name || '')
+                      }}
+                    />
+                    {block.content && (
+                      <p className="text-xs text-gray-500 mt-1">{block.content}</p>
+                    )}
+                  </>
                 ) : (
                   <textarea
                     className="w-full border-1 rounded-[1rem] p-[1rem]"
@@ -165,6 +190,7 @@ export default function CreateBlogPostPage() {
                     onChange={e => updateBlock(index, e.target.value)}
                   />
                 )}
+
                 <button
                   type="button"
                   onClick={() => removeBlock(index)}
@@ -190,7 +216,7 @@ export default function CreateBlogPostPage() {
           </div>
         </div>
 
-        {/* Senden */}
+        {/* Absenden */}
         <div>
           <button type="submit" className="global-btn-bg" disabled={isSubmitting}>
             {isSubmitting ? 'Erstellen...' : 'Erstellen'}
