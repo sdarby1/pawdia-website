@@ -62,7 +62,7 @@ export default function Page() {
           <div className="video-overlay"></div>
           <video
             className="bg-video"
-            src="/videos/home-background.webm"
+            src="/videos/home-background.mp4"
             autoPlay
             loop
             muted

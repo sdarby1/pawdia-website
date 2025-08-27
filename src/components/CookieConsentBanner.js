@@ -29,7 +29,7 @@ export default function CookieConsentBanner() {
   return (
     <div className="fixed bottom-[0.5rem] right-[0.5rem] max-w-[550px] shadow-[0px_0px_4px_rgba(0,0,0,0.4)] p-[1rem] flex flex-col gap-[1rem] rounded-[1rem] bg-white z-[10000]">
       <div className='flex gap-[1rem] items-center'>
-        <img src="/images/logo/Logo.svg" className='h-[45px]'></img>
+        <img src="/images/logo/Logo-green.svg" className='h-[45px]'></img>
         <h4>Einstellungen verwalten</h4>
       </div>
       <p className='!text-[0.7rem]'>
