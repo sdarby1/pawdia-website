@@ -13,6 +13,8 @@ import "./styles/footer.css"
 import SessionWrapper from "@/components/SessionWrapper";
 import { Header } from "@/components/header"
 import Footer from "@/components/footer";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+
 
 
 export default function RootLayout({ children }) {
@@ -23,6 +25,7 @@ export default function RootLayout({ children }) {
           <Header />
           {children}
           <Footer/>
+          <CookieConsentBanner />
         </SessionWrapper>
       </body>
     </html>

@@ -3,11 +3,14 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 export default function TierListe() {
   const [tiere, setTiere] = useState([])
   const [favoriten, setFavoriten] = useState(new Set())
   const [info, setInfo] = useState(null)
+  const { data: session } = useSession()
+  const role = session?.user?.role  
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -308,20 +311,47 @@ export default function TierListe() {
                 </div>
               </div>
 
-              <div className='flex flex-col gap-[0.5rem]'>
-                <p className='font-semibold !text-[0.8rem]'>Versteht sich mit:</p>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={goodWithChildren} onChange={() => setGoodWithChildren(!goodWithChildren)} /> Kinder</label>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={goodWithDogs} onChange={() => setGoodWithDogs(!goodWithDogs)} /> Hunde</label>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={goodWithCats} onChange={() => setGoodWithCats(!goodWithCats)} /> Katzen</label>
+              <div className="flex flex-col gap-[0.5rem]">
+                <p className="font-semibold !text-[0.8rem]">Versteht sich mit:</p>
+
+                {[
+                  { label: 'Kinder', state: goodWithChildren, setter: setGoodWithChildren },
+                  { label: 'Hunde', state: goodWithDogs, setter: setGoodWithDogs },
+                  { label: 'Katzen', state: goodWithCats, setter: setGoodWithCats },
+                ].map(({ label, state, setter }, idx) => (
+                  <label key={idx} className="flex items-center gap-2 text-[0.7rem]">
+                    <input
+                      type="checkbox"
+                      checked={state}
+                      onChange={() => setter(!state)}
+                      className="w-[1.2rem] h-[1.2rem] rounded accent-(--primary-color)  cursor-pointer"
+                    />
+                    {label}
+                  </label>
+                ))}
               </div>
 
-              <div className='flex flex-col gap-[0.5rem]'>
-                <p className='font-semibold !text-[0.8rem]'>Eignung:</p>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={isForFamilies} onChange={() => setIsForFamilies(!isForFamilies)} /> Familien</label>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={isForExperienced} onChange={() => setIsForExperienced(!isForExperienced)} /> Hundeprofis</label>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={isForBeginners} onChange={() => setIsForBeginners(!isForBeginners)} /> Anfänger</label>
-                <label className='text-[0.7rem]'><input type="checkbox" checked={isForSeniors} onChange={() => setIsForSeniors(!isForSeniors)} /> Senioren</label>
+              <div className="flex flex-col gap-[0.5rem]">
+                <p className="font-semibold !text-[0.8rem]">Eignung:</p>
+
+                {[
+                  { label: 'Familien', state: isForFamilies, setter: setIsForFamilies },
+                  { label: 'Hundeprofis', state: isForExperienced, setter: setIsForExperienced },
+                  { label: 'Anfänger', state: isForBeginners, setter: setIsForBeginners },
+                  { label: 'Senioren', state: isForSeniors, setter: setIsForSeniors },
+                ].map(({ label, state, setter }, idx) => (
+                  <label key={idx} className="flex items-center gap-2 text-[0.7rem]">
+                    <input
+                      type="checkbox"
+                      checked={state}
+                      onChange={() => setter(!state)}
+                      className="w-[1.2rem] h-[1.2rem] rounded-[1rem] accent-(--primary-color) cursor-pointer"
+                    />
+                    {label}
+                  </label>
+                ))}
               </div>
+
 
               <div className='flex flex-col gap-[1rem]'>
                 <p className='font-semibold !text-[0.8rem]'>Kastriert:</p>
@@ -330,7 +360,7 @@ export default function TierListe() {
                     <button
                       key={val}
                       type="button"
-                      className={`rounded-[90px] px-4 py-2 shadow !text-[0.8rem] ${isNeutered === val ? 'bg-(--primary-color) text-white' : 'bg-white text-black opacity-50 !text-[0.8rem]'}`}
+                      className={`rounded-[90px] px-4 py-2 shadow cursor-pointer !text-[0.8rem] ${isNeutered === val ? 'bg-(--primary-color) text-white' : 'bg-white text-black opacity-50 !text-[0.8rem]'}`}
                       onClick={() => setIsNeutered(val)}
                     >
                       {val === 'EGAL' ? 'Egal' : val === 'true' ? 'Ja' : 'Nein'}
@@ -374,12 +404,17 @@ export default function TierListe() {
                         </div>
                       </div>
                     </Link>
-                    <button onClick={() => toggleFavorite(tier.id)} className='absolute top-[1rem] right-[1rem] cursor-pointer'>
-                      {favoriten.has(tier.id)
-                        ? <img className="w-[2rem]" src="/images/animals/icons/fav.svg" />
-                        : <img className="w-[2rem]" src="/images/animals/icons/no-fav.svg" />
-                      }
-                    </button>
+                    {role === 'USER' && (
+                      <button
+                        onClick={() => toggleFavorite(tier.id)}
+                        className="absolute top-[1rem] right-[1rem] cursor-pointer"
+                      >
+                        {favoriten.has(tier.id)
+                          ? <img className="w-[2rem]" src="/images/animals/icons/fav.svg" />
+                          : <img className="w-[2rem]" src="/images/animals/icons/no-fav.svg" />
+                        }
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
